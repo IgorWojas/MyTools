@@ -3,10 +3,14 @@
 #include <opencv2/opencv.hpp>
 #include <Eigen/Core>
 #include <random>
+//#include <chrono>
 
 using namespace cv;
 
 typedef Eigen::MatrixXd Matrix;
+
+//using clock = std::chrono::system_clock;        // to potrafi wywalic blad :/
+//using sec = std::chrono::duration<double>;
 
 // CV_64F
 Mat eigen2mat(Matrix in, int xi, int yi) {
@@ -21,6 +25,7 @@ Mat eigen2mat(Matrix in, int xi, int yi) {
     return ret;
 }
 
+// Flat
 Matrix mat2eigen(Mat in) {
     Matrix ret((in.cols * in.rows), 1);
     int counter = 0;
@@ -64,3 +69,44 @@ Mat prepImg(std::string path) {
     mat /= 255;
     return mat;
 }
+
+// Create flat eigen matrix from bmp path
+Matrix path2eigen(std::string path) {
+    Matrix ret = mat2eigen(prepImg(path));
+    return ret;
+}
+
+//void startTime() {
+//    const auto before = clock::now();
+//}
+//
+//void stopTime() {
+//    const sec duration = clock::now() - before;
+//    std::cout << "It took " << duration.count() << "s" << std::endl;
+//}
+
+//Matrix loadBmpList(int first, int last, std::string folderPath) {
+//    Matrix ret((last - first));
+//
+//    return ret;
+//}
+
+// Eigen flat matrix image container for MiniDnn
+//class ImgContainer {
+//private:
+//    int imgWidth;
+//    int imgHeight;
+//    int numImg;
+//
+//public: 
+//    Matrix Container((imgWidth * imgHeight), numImg);
+//
+//    // width, height, number of images
+//    ImgContainer(int x, int y, int num) {
+//        imgWidth = x;
+//        imgHeight = y;
+//        numImg = num;
+//    }
+//    
+//
+//};
