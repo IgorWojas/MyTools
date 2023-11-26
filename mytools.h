@@ -59,6 +59,15 @@ void loopWindow(int width, int height, Mat in) {
     waitKey(1);
 }
 
+// live window preview, window position (x, y)
+void loopWindow(int width, int height, Mat in, int posx, int posy) {
+    namedWindow("win", 0);
+    resizeWindow("win", width, height);
+    moveWindow("win", posx, posy);
+    imshow("win", in);
+    waitKey(1);
+}
+
 // path.bmp, GREYSCALE,  CV_64F, 1/255
 Mat prepImg(std::string path) {     
     Mat mat = cv::imread(path, IMREAD_GRAYSCALE);
@@ -73,14 +82,14 @@ Matrix path2eigen(std::string path) {
     return ret;
 }
 
-// Timer zegar > zegar.startTimer() > zegar.stopTimer()
+// Timer t1 > t1.stop()
 class Timer {
 public:
-    void startTimer() {
+    Timer() {
         startTimePoint = std::chrono::high_resolution_clock::now();
     }
 
-    void stopTimer() {
+    void stop() {
         auto endTimePoint = std::chrono::high_resolution_clock::now();
         auto start = std::chrono::time_point_cast<std::chrono::microseconds>(startTimePoint).time_since_epoch().count();
         auto end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimePoint).time_since_epoch().count();
@@ -91,3 +100,20 @@ public:
 private:
     std::chrono::time_point<std::chrono::high_resolution_clock> startTimePoint;
 };
+
+// fast : flat
+std::vector<double> mat2vec(cv::Mat vin) {
+    cv::Mat flat = vin.reshape(1, vin.total() * vin.channels());
+    std::vector<double> out = vin.isContinuous() ? flat : flat.clone();
+    return out;
+}
+
+// CV_64F , fast : buffer
+Mat vector2mat(const std::vector<double>& data, int rows, int cols) {
+    if (data.size() != rows * cols) {
+        throw std::invalid_argument("Size of data vector does not match rows and cols parameters.");
+    }
+    cv::Mat mat(rows, cols, CV_64F);
+    memcpy(mat.data, data.data(), data.size() * sizeof(double));
+    return mat;
+}
