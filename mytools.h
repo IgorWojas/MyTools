@@ -3,14 +3,11 @@
 #include <opencv2/opencv.hpp>
 #include <Eigen/Core>
 #include <random>
-//#include <chrono>
+#include <chrono>
 
 using namespace cv;
 
 typedef Eigen::MatrixXd Matrix;
-
-//using clock = std::chrono::system_clock;        // to potrafi wywalic blad :/
-//using sec = std::chrono::duration<double>;
 
 // CV_64F
 Mat eigen2mat(Matrix in, int xi, int yi) {
@@ -76,37 +73,21 @@ Matrix path2eigen(std::string path) {
     return ret;
 }
 
-//void startTime() {
-//    const auto before = clock::now();
-//}
-//
-//void stopTime() {
-//    const sec duration = clock::now() - before;
-//    std::cout << "It took " << duration.count() << "s" << std::endl;
-//}
+// Timer zegar > zegar.startTimer() > zegar.stopTimer()
+class Timer {
+public:
+    void startTimer() {
+        startTimePoint = std::chrono::high_resolution_clock::now();
+    }
 
-//Matrix loadBmpList(int first, int last, std::string folderPath) {
-//    Matrix ret((last - first));
-//
-//    return ret;
-//}
+    void stopTimer() {
+        auto endTimePoint = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::time_point_cast<std::chrono::microseconds>(startTimePoint).time_since_epoch().count();
+        auto end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimePoint).time_since_epoch().count();
+        auto duration = end - start;
+        std::cout << "Elapsed time: " << duration * 0.001 << "ms" << std::endl;
+    }
 
-// Eigen flat matrix image container for MiniDnn
-//class ImgContainer {
-//private:
-//    int imgWidth;
-//    int imgHeight;
-//    int numImg;
-//
-//public: 
-//    Matrix Container((imgWidth * imgHeight), numImg);
-//
-//    // width, height, number of images
-//    ImgContainer(int x, int y, int num) {
-//        imgWidth = x;
-//        imgHeight = y;
-//        numImg = num;
-//    }
-//    
-//
-//};
+private:
+    std::chrono::time_point<std::chrono::high_resolution_clock> startTimePoint;
+};
